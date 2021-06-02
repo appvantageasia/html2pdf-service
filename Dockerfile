@@ -36,6 +36,7 @@ RUN apt-get update \
 
 WORKDIR /usr/local/app
 
+ENV PORT=3000
 ENV NODE_ENV=production
 
 COPY --from=build /usr/local/app/node_modules ./node_modules
