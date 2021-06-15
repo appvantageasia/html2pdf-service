@@ -20,13 +20,13 @@ and capability to ensure quality and quick-to-market delivery.
 Pull the docker image to run the service
 
 ```bash
-docker pull docker.pkg.github.com/appvantageasia/html2pdf-service/api:latest
+docker pull appvantage/html2pdf-service:latest
 ```
 
 Then launch a container
 
 ```bash
-docker run --rm -p 3000:3000 docker.pkg.github.com/appvantageasia/html2pdf-service/api:latest
+docker run --rm -p 3000:3000 appvantage/html2pdf-service:latest
 ```
 
 The web server will by default listen on the port 3000, it may be changed with the environment variable `PORT`.
