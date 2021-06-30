@@ -2,7 +2,7 @@
     "name": "html2pdf-service",
     "version": "0.0.0-development",
     "engines": {
-        "node": ">=14.15"
+        "node": ">=16.2"
     },
     "license": "MIT",
     "scripts": {
