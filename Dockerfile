@@ -1,4 +1,4 @@
-FROM node:16.3.0 as build
+FROM node:16.4.2 as build
 
 WORKDIR /usr/local/app
 
@@ -17,7 +17,7 @@ ENV NODE_ENV=production
 
 RUN yarn install --frozen-lockfile
 
-FROM node:16.3.0
+FROM node:16.4.2
 
 RUN apt-get update \
      && apt-get install -y wget gnupg ca-certificates procps libxss1 \
