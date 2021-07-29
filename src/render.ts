@@ -48,9 +48,7 @@ const render = async (html: string, customOptions?: Partial<RenderOptions> | nul
         }
 
         // set html content
-        await page.goto(`data:text/html;charset=UTF-8,${html}`, {
-            waitUntil: options.waitUntil,
-        });
+        await page.setContent(html, { waitUntil: options.waitUntil });
 
         // render to pdf
         pdf = await page.pdf(options.pdf);
