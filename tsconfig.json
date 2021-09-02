@@ -15,5 +15,5 @@
         "jsx": "preserve"
     },
     "include": ["src/**/*.ts"],
-    "exclude": ["node_modules", "build"]
+    "exclude": [".yarn", "build"]
 }

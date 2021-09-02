@@ -63,5 +63,11 @@
         "no-useless-constructor": "off",
         "@typescript-eslint/no-useless-constructor": "warn"
     },
-    "settings": { "import/resolver": { "node": { "extensions": [".mjs", ".csj", ".js", ".ts", ".ts", ".json"] } } }
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [".mjs", ".csj", ".js", ".ts", ".ts", ".json"]
+            }
+        }
+    }
 }

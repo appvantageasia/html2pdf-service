@@ -4,18 +4,17 @@ WORKDIR /usr/local/app
 
 ENV NODE_ENV=development
 
-COPY yarn.lock package.json ./
+COPY yarn.lock package.json .yarnrc.yml .pnp.cjs ./
+COPY .yarn ./.yarn
 
-RUN yarn install --frozen-lockfile
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
+
+RUN yarn install --immutable --immutable-cache --check-cache
 
 COPY tsconfig.json ./
 COPY src ./src
 
 RUN yarn build
-
-ENV NODE_ENV=production
-
-RUN yarn install --frozen-lockfile
 
 FROM node:16.4.2
 
@@ -37,7 +36,8 @@ WORKDIR /usr/local/app
 ENV PORT=3000
 ENV NODE_ENV=production
 
-COPY --from=build /usr/local/app/node_modules ./node_modules
+COPY yarn.lock package.json .yarnrc.yml .pnp.cjs ./
+COPY --from=build /usr/local/app/.yarn ./.yarn
 COPY --from=build /usr/local/app/build ./
 
-CMD node index.js
+CMD yarn node index.js
