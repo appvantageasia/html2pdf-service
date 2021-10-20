@@ -1,5 +1,6 @@
 import { merge } from 'lodash/fp';
 import puppeteer from 'puppeteer';
+import { getBrowser } from './browser';
 
 export type RenderOptions = {
     emulateScreenMedia: boolean;
@@ -19,11 +20,7 @@ const render = async (html: string, customOptions?: Partial<RenderOptions> | nul
     const options = merge(defaultOptions, customOptions);
 
     // start browser
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
+    const browser = await getBrowser();
     // start page
     const page = await browser.newPage();
 
@@ -53,8 +50,8 @@ const render = async (html: string, customOptions?: Partial<RenderOptions> | nul
         // render to pdf
         pdf = await page.pdf(options.pdf);
     } finally {
-        // close browser
-        await browser.close();
+        // close the page
+        await page.close();
     }
 
     return pdf;

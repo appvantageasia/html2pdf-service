@@ -1,4 +1,5 @@
 import app from './app';
+import { closeBrowser } from './browser';
 
 const port = parseInt(process.env.PORT || '3000', 10);
 
@@ -25,8 +26,13 @@ function closeServer(signal) {
         exited = true;
         // print it out
         console.info('Server closed');
-        // give a short period to clean up and properly shutdown
-        setTimeout(() => process.exit(0), 100);
+        // then stop the browser
+        closeBrowser().then(() => {
+            // print it out
+            console.info('Browser stopped');
+            // give a short period to clean up and properly shutdown
+            setTimeout(() => process.exit(0), 100);
+        });
     });
 }
 
