@@ -3,6 +3,7 @@ FROM node:16.11.1 as build
 WORKDIR /usr/local/app
 
 ENV NODE_ENV=development
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 COPY yarn.lock package.json ./
 
@@ -14,7 +15,6 @@ COPY src ./src
 RUN yarn build
 
 ENV NODE_ENV=production
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 RUN yarn install --frozen-lockfile
 
