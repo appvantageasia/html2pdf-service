@@ -1,4 +1,4 @@
-FROM node:16.4.2 as build
+FROM node:16.11.1 as build
 
 WORKDIR /usr/local/app
 
@@ -14,10 +14,11 @@ COPY src ./src
 RUN yarn build
 
 ENV NODE_ENV=production
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 RUN yarn install --frozen-lockfile
 
-FROM node:16.4.2
+FROM node:16.11.1
 
 RUN apt-get update \
      && apt-get install -y wget gnupg ca-certificates procps libxss1 \
@@ -36,6 +37,7 @@ WORKDIR /usr/local/app
 
 ENV PORT=3000
 ENV NODE_ENV=production
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
 
 COPY --from=build /usr/local/app/node_modules ./node_modules
 COPY --from=build /usr/local/app/build ./

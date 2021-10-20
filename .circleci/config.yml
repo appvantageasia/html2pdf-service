@@ -3,7 +3,7 @@ version: 2.1
 executors:
     node-standalone:
         docker:
-            - image: circleci/node:16.4.2
+            - image: circleci/node:16.11.1
 
 jobs:
     deps-install:
@@ -12,14 +12,14 @@ jobs:
             - checkout
             - restore_cache:
                   keys:
-                      - yarn-cache-node14-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
-                      - yarn-cache-node14-{{ checksum "package.json" }}
-                      - yarn-cache-node14
+                      - yarn-cache-node16-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+                      - yarn-cache-node16-{{ checksum "package.json" }}
+                      - yarn-cache-node16
             - run:
                   name: Install depdencies
                   command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
             - save_cache:
-                  key: yarn-cache-node14-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+                  key: yarn-cache-node16-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
                   paths:
                       - ~/.cache/yarn
             - persist_to_workspace:
