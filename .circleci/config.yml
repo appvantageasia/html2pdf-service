@@ -1,84 +1,116 @@
 version: 2.1
 
 executors:
-    node-standalone:
-        docker:
-            - image: circleci/node:16.11.1
+  node-standalone:
+    docker:
+      - image: circleci/node:16.11.1
 
 jobs:
-    deps-install:
-        executor: node-standalone
-        steps:
-            - checkout
-            - restore_cache:
-                  keys:
-                      - yarn-cache-node16-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
-                      - yarn-cache-node16-{{ checksum "package.json" }}
-                      - yarn-cache-node16
-            - run:
-                  name: Install depdencies
-                  command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
-            - save_cache:
-                  key: yarn-cache-node16-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
-                  paths:
-                      - ~/.cache/yarn
-            - persist_to_workspace:
-                  root: ~/project
-                  paths:
-                      - node_modules
+  deps-install:
+    executor: node-standalone
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-cache-node16-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+            - yarn-cache-node16-{{ checksum "package.json" }}
+            - yarn-cache-node16
+      - run:
+          name: Install depdencies
+          command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
+      - save_cache:
+          key: yarn-cache-node16-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - node_modules
 
-    validate-project:
-        executor: node-standalone
-        steps:
-            - checkout
-            - attach_workspace:
-                  at: ~/project
-            - run:
-                  name: Lint source code
-                  command: yarn lint --format junit -o ./junit/js-lint-results.xml
-            - run:
-                  name: Build
-                  command: yarn build
-                  environment:
-                      NODE_ENV: production
-            - persist_to_workspace:
-                  root: ~/project
-                  paths:
-                      - build
-            - store_artifacts:
-                  path: ~/project/build
-                  destination: build
-            - run:
-                  name: Lint commit messages
-                  command: node ./lint-commits.js
-            - store_test_results:
-                  path: ~/project/junit/
+  validate-project:
+    executor: node-standalone
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Lint source code
+          command: yarn lint --format junit -o ./junit/js-lint-results.xml
+      - run:
+          name: Build
+          command: yarn build
+          environment:
+            NODE_ENV: production
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - build
+      - store_artifacts:
+          path: ~/project/build
+          destination: build
+      - run:
+          name: Lint commit messages
+          command: node ./lint-commits.js
+      - store_test_results:
+          path: ~/project/junit/
 
-    release:
-        executor: node-standalone
-        steps:
-            - checkout
-            - attach_workspace:
-                  at: ~/project
-            - run:
-                  name: semantic-release
-                  command: yarn semantic-release
+  release:
+    executor: node-standalone
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: semantic-release
+          command: yarn semantic-release
+
+  load-testing:
+    executor: node-standalone
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: install k6
+          command: |
+            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+            echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+            sudo apt-get update
+            sudo apt-get install -y k6
+      - run:
+          name: start server
+          command: node index.js
+          working_directory: ~/project/build
+          background: true
+      - run:
+          name: Wait for web server
+          command: dockerize -wait tcp://127.0.0.1:3000 -timeout 1m
+      - run:
+          name: start
+          command: k6 run --vus 10 --duration 30s k6.js
 
 workflows:
-    version: 2
+  version: 2
 
-    main:
-        jobs:
+  main:
+    jobs:
+      - deps-install
+      - validate-project:
+          requires:
             - deps-install
-            - validate-project:
-                  requires:
-                      - deps-install
-            - release:
-                  context:
-                      - html2pdf-release
-                  filters:
-                      branches:
-                          only:
-                              - master
-                  requires:
-                      - validate-project
+      - release:
+          context:
+            - html2pdf-release
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - validate-project
+      - load-testing:
+          requires:
+            - validate-project
+          filters:
+            branches:
+              only:
+                - master
