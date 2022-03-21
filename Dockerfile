@@ -16,11 +16,14 @@ RUN yarn build
 
 ENV NODE_ENV=production
 
-RUN yarn install --frozen-lockfile
+# install node prune
+RUN curl -sf https://gobinaries.com/tj/node-prune | sh
 
-# run node-prun
-RUN curl -sf https://gobinaries.com/tj/node-prune | sh \
+# install dependencies with frozen lockfile
+# then clean with node prune
+RUN yarn install --frozen-lockfile --production \
     && node-prune
+
 
 FROM node:16.14.2-bullseye-slim
 
