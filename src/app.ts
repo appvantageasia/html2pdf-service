@@ -1,6 +1,7 @@
 import compression from 'compression';
 import express from 'express';
 import morgan from 'morgan';
+import { getBrowser } from './browser';
 import render from './render';
 
 const app = express();
@@ -18,6 +19,25 @@ app.use(express.json());
 
 // enable logs
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'tiny' : 'dev'));
+
+// liveness probe
+app.get('/.live', async (req, res, next) => {
+    try {
+        // get the browser instance
+        const browser = await getBrowser();
+
+        // ensure it's alive and throw if it's not
+        if (!browser.isConnected()) {
+            throw new Error('Browser disconnected');
+        }
+
+        // give a successful answer
+        res.status(200).send('OK');
+    } catch (error) {
+        // continue with the error
+        next(error);
+    }
+});
 
 // render page
 app.post('/', async (req, res, next) => {
