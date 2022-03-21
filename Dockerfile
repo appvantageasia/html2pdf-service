@@ -1,4 +1,4 @@
-FROM node:16.11.1 as build
+FROM node:16.14.2-bullseye-slim as build
 
 WORKDIR /usr/local/app
 
@@ -18,7 +18,11 @@ ENV NODE_ENV=production
 
 RUN yarn install --frozen-lockfile
 
-FROM node:16.11.1
+# run node-prun
+RUN curl -sf https://gobinaries.com/tj/node-prune | sh \
+    && node-prune
+
+FROM node:16.14.2-bullseye-slim
 
 RUN apt-get update \
      && apt-get install -y wget gnupg ca-certificates procps libxss1 \
