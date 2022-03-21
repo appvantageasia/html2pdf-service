@@ -4,7 +4,7 @@ import { closeBrowser } from './browser';
 const port = parseInt(process.env.PORT || '3000', 10);
 
 const server = app.listen(port, () => {
-    console.info('Express server listening on http://localhost:%d/ in %s mode', port, app.get('env'));
+    console.info('Express server listening on http://127.0.0.1:%d/ in %s mode', port, app.get('env'));
 });
 
 // keep track if the server is already exiting
