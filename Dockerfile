@@ -1,5 +1,9 @@
 FROM node:16.14.2-bullseye-slim as build
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /usr/local/app
 
 ENV NODE_ENV=development
@@ -16,14 +20,12 @@ RUN yarn build
 
 ENV NODE_ENV=production
 
-# install node prune
-RUN curl -sf https://gobinaries.com/tj/node-prune | sh
-
 # install dependencies with frozen lockfile
 # then clean with node prune
-RUN yarn install --frozen-lockfile --production \
-    && node-prune
+RUN yarn install --frozen-lockfile --production
 
+# install node prune
+RUN curl -sf https://gobinaries.com/tj/node-prune | sh
 
 FROM node:16.14.2-bullseye-slim
 
