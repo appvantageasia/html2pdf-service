@@ -661,10 +661,10 @@
   resolved "https://registry.yarnpkg.com/@types/k6/-/k6-0.34.3.tgz#4b2923ff716bc47f9493b3eb6e009d57b63a1cfd"
   integrity sha512-+IDtg7q7tmER2ywKBU15gVjG9u9kkrlt/r+xjd8ZBUtdDSyWu+hvC02NHoJ5Is5aLLan/FcLRSKHNgCy3V2DWA==
 
-"@types/lodash@^4.14.170":
-  version "4.14.180"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.180.tgz#4ab7c9ddfc92ec4a887886483bc14c79fb380670"
-  integrity sha512-XOKXa1KIxtNXgASAnwj7cnttJxS4fksBRywK/9LzRV5YxrF80BXZIGeQSuoESQ/VkUj30Ae0+YcuHc15wJCB2g==
+"@types/lodash@^4.14.182":
+  version "4.14.182"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.182.tgz#05301a4d5e62963227eaafe0ce04dd77c54ea5c2"
+  integrity sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==
 
 "@types/mime@^1":
   version "1.3.2"
