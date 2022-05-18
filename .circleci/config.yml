@@ -3,7 +3,7 @@ version: 2.1
 executors:
   node-standalone:
     docker:
-      - image: cimg/node:16.14.2
+      - image: cimg/node:18.1.0
 
 jobs:
   deps-install:
@@ -12,14 +12,14 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - yarn-cache-node16-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
-            - yarn-cache-node16-{{ checksum "package.json" }}
-            - yarn-cache-node16
+            - yarn-cache-node18-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+            - yarn-cache-node18-{{ checksum "package.json" }}
+            - yarn-cache-node18
       - run:
           name: Install depdencies
           command: yarn install --frozen-lockfile --cache-folder ~/.cache/yarn
       - save_cache:
-          key: yarn-cache-node16-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
+          key: yarn-cache-node18-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - persist_to_workspace:
