@@ -13,6 +13,7 @@ module.exports = {
                 releaseRules: [
                     { type: 'docs', scope: 'readme', release: 'patch' },
                     { type: 'chore', scope: 'deps', release: 'patch' },
+                    { type: 'chore', scope: 'docker', release: 'patch' },
                 ],
             },
         ],
