@@ -40,6 +40,8 @@ RUN apt-get update \
      # (https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-doesnt-launch-on-unix)
      # but that seems too easy to get out of date.
      && apt-get install -y google-chrome-stable \
+     # Font installation, support chinese font characters for now
+     && apt-get install -y fonts-wqy-zenhei \
      && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/local/app
