@@ -47,32 +47,14 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Build image for chrome
+        uses: ./.github/actions/docker-build
+        with:
+          dockerFile: docker/chrome/Dockerfile
+          imageName: $IMAGE_NAME
 
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
-
-      - name: Log into registry
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u $DOCKER_LOGIN --password-stdin
-
-      - name: Push image
-        run: |
-          IMAGE_ID=appvantage/$IMAGE_NAME
-
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
-
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+      - name: Build image for chromium
+        uses: ./.github/actions/docker-build
+        with:
+          dockerFile: docker/chromium/Dockerfile
+          imageName: $IMAGE_NAME-chromium
