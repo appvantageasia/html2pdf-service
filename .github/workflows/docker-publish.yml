@@ -10,6 +10,7 @@ on:
 env:
   DOCKER_LOGIN: appvantageasia
   IMAGE_NAME: html2pdf-service
+  IMAGE_CHROMIUM: html2pdf-service-chromium
 
 jobs:
   # Run tests.
@@ -47,17 +48,60 @@ jobs:
       packages: write
 
     steps:
-      # Use actions/checkout before using local action loader
-      # https://github.community/t/path-to-action-in-the-same-repository-as-workflow/16952/2
       - uses: actions/checkout@v3
-      - name: Build image for chrome
-        uses: ./.github/actions/docker-build
-        with:
-          dockerFile: docker/chrome/Dockerfile
-          imageName: $IMAGE_NAME
 
-      - name: Build image for chromium
-        uses: ./.github/actions/docker-build
-        with:
-          dockerFile: docker/chromium/Dockerfile
-          imageName: $IMAGE_NAME-chromium
+      - name: Build chrome image
+        run: docker build . --file docker/chrome/Dockerfile --tag $IMAGE_NAME
+
+      - name: Log into registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u $DOCKER_LOGIN --password-stdin
+
+      - name: Push chrome image
+        run: |
+          IMAGE_ID=appvantage/$IMAGE_NAME
+
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+
+      - name: Build chromium image
+        run: docker build . --file docker/chromium/Dockerfile --tag $IMAGE_CHROMIUM
+
+      - name: Log into registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u $DOCKER_LOGIN --password-stdin
+
+      - name: Push chromium image
+        run: |
+          IMAGE_ID=appvantage/$IMAGE_CHROMIUM
+
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag $IMAGE_CHROMIUM $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
