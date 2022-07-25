@@ -47,6 +47,9 @@ jobs:
       packages: write
 
     steps:
+      # Use actions/checkout before using local action loader
+      # https://github.community/t/path-to-action-in-the-same-repository-as-workflow/16952/2
+      - uses: actions/checkout@v3
       - name: Build image for chrome
         uses: ./.github/actions/docker-build
         with:
