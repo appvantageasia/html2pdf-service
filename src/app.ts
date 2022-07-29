@@ -14,8 +14,10 @@ app.disable('x-powered-by');
 
 // enable compression
 app.use(compression());
+
 // and json parsing
-app.use(express.json());
+const bodyLimit = process.env.BODY_LIMIT || '100kb';
+app.use(express.json({ limit: bodyLimit }));
 
 // enable logs
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'tiny' : 'dev'));
