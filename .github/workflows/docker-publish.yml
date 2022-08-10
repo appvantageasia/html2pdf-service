@@ -79,14 +79,14 @@ jobs:
           docker push $IMAGE_ID:$VERSION
 
       - name: Build chromium image
-        run: docker build . --file docker/chromium/Dockerfile --tag $IMAGE_CHROMIUM
+        run: docker build . --file docker/chromium/Dockerfile --platform linux/arm64 --tag $IMAGE_CHROMIUM
 
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u $DOCKER_LOGIN --password-stdin
 
       - name: Push chromium image
         run: |
-          IMAGE_ID=appvantage/$IMAGE_CHROMIUM
+          IMAGE_ID=appvantage/$IMAGE_NAME
 
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
@@ -103,5 +103,5 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag $IMAGE_CHROMIUM $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+          docker tag $IMAGE_CHROMIUM $IMAGE_ID:$VERSION-chromium
+          docker push $IMAGE_ID:$VERSION-chromium
