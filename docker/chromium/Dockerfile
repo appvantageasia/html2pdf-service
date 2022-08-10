@@ -1,4 +1,4 @@
-FROM node:18.3.0-bullseye-slim as build
+FROM --platform=linux/arm64 node:18.3.0-bullseye-slim as build
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
@@ -27,7 +27,7 @@ RUN yarn install --frozen-lockfile --production
 # install node prune
 RUN curl -sf https://gobinaries.com/tj/node-prune | sh
 
-FROM node:18.3.0-bullseye-slim
+FROM --platform=linux/arm64 node:18.3.0-bullseye-slim
 
 RUN apt-get update \
      && apt-get install -y wget gnupg ca-certificates procps libxss1 \
