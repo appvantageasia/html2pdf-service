@@ -1,8 +1,8 @@
 import compression from 'compression';
 import express from 'express';
 import morgan from 'morgan';
-import { getBrowser } from './browser';
-import render from './render';
+import { getBrowser } from './browser.js';
+import render from './render.js';
 
 const app = express();
 

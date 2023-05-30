@@ -1,18 +1,18 @@
 {
+    "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
-        "target": "es2020",
-        "lib": ["dom", "dom.iterable", "esnext"],
+        "target": "ES2022",
+        "lib": ["ESNext"],
         "outDir": "build",
         "allowJs": true,
         "skipLibCheck": true,
         "strict": false,
         "forceConsistentCasingInFileNames": true,
         "esModuleInterop": true,
-        "module": "commonjs",
-        "moduleResolution": "node",
+        "module": "ESNext",
+        "moduleResolution": "NodeNext",
         "resolveJsonModule": true,
-        "isolatedModules": true,
-        "jsx": "preserve"
+        "isolatedModules": true
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules", "build"]

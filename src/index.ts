@@ -1,5 +1,5 @@
-import app from './app';
-import { closeBrowser } from './browser';
+import app from './app.js';
+import { closeBrowser } from './browser.js';
 
 const port = parseInt(process.env.PORT || '3000', 10);
 
