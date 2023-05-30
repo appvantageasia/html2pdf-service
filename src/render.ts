@@ -1,6 +1,6 @@
-import { merge } from 'lodash/fp';
+import merge from 'lodash/fp/merge.js';
 import puppeteer from 'puppeteer';
-import { getBrowser } from './browser';
+import { getBrowser } from './browser.js';
 
 export type RenderOptions = {
     emulateScreenMedia: boolean;

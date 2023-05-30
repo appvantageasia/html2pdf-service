@@ -6,7 +6,7 @@ let instancePromise: Promise<puppeteer.Browser> | null = null;
 
 const launchBrowser = async (): Promise<puppeteer.Browser> =>
     puppeteer.launch({
-        headless: true,
+        headless: 'new',
         args: ['--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox'],
     });
 

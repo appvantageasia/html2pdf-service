@@ -1,4 +1,4 @@
-FROM node:18.3.0-bullseye-slim as build
+FROM node:18.16.0-bullseye-slim as build
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
@@ -9,9 +9,10 @@ WORKDIR /usr/local/app
 ENV NODE_ENV=development
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-COPY yarn.lock package.json ./
+COPY .yarn ./.yarn
+COPY yarn.lock package.json .yarnrc.yml ./
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 COPY tsconfig.json ./
 COPY src ./src
@@ -22,12 +23,12 @@ ENV NODE_ENV=production
 
 # install dependencies with frozen lockfile
 # then clean with node prune
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --immutable
 
 # install node prune
 RUN curl -sf https://gobinaries.com/tj/node-prune | sh
 
-FROM node:18.3.0-bullseye-slim
+FROM node:18.16.0-bullseye-slim
 
 RUN apt-get update \
      && apt-get install -y wget gnupg ca-certificates procps libxss1 \
@@ -41,7 +42,7 @@ RUN apt-get update \
      # but that seems too easy to get out of date.
      && apt-get install -y google-chrome-stable \
      # Font installation, support chinese font characters for now
-     && apt-get install -y fonts-wqy-zenhei \
+     && apt-get install -y fonts-wqy-zenhei fonts-indic fonts-noto fonts-noto-cjk \
      && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/local/app
@@ -51,6 +52,8 @@ ENV NODE_ENV=production
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
 
 COPY --from=build /usr/local/app/node_modules ./node_modules
+COPY --from=build /usr/local/app/.yarn ./.yarn
 COPY --from=build /usr/local/app/build ./
+COPY yarn.lock package.json .yarnrc.yml ./
 
 CMD node index.js
