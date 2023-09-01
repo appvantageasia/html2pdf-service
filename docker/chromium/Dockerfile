@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 node:18.16.0-bullseye-slim as build
+FROM --platform=linux/arm64 node:18.17.1-bullseye-slim as build
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
@@ -28,7 +28,7 @@ RUN yarn install --immutable
 # install node prune
 RUN curl -sf https://gobinaries.com/tj/node-prune | sh
 
-FROM --platform=linux/arm64 node:18.16.0-bullseye-slim
+FROM --platform=linux/arm64 node:18.17.1-bullseye-slim
 
 RUN apt-get update \
      && apt-get install -y wget gnupg ca-certificates procps libxss1 \
