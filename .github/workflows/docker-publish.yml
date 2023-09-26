@@ -48,7 +48,8 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Build chrome image
         run: docker build . --file docker/chrome/Dockerfile --tag $IMAGE_NAME
@@ -77,6 +78,26 @@ jobs:
 
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+  # Build chromium image in docker
+  push-chromium:
+    needs: test
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: linux/arm64
 
       - name: Build chromium image
         run: docker build . --file docker/chromium/Dockerfile --platform linux/arm64 --tag $IMAGE_CHROMIUM
