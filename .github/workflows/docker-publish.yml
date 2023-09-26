@@ -102,6 +102,9 @@ jobs:
       - name: Build chromium image
         run: docker build . --file docker/chromium/Dockerfile --platform linux/arm64 --tag $IMAGE_CHROMIUM
 
+      - name: Log into registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u $DOCKER_LOGIN --password-stdin
+
       - name: Push chromium image
         run: |
           IMAGE_ID=appvantage/$IMAGE_NAME
