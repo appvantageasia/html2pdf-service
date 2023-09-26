@@ -37,8 +37,8 @@ RUN apt-get update \
      # and M1 failed to emulate the chrome browser.
      # thus we use chromium for this
      && apt-get install -y chromium \
-     # Font settings, currently support for chinese characters
-     && apt-get install -y fonts-wqy-zenhei fonts-indic fonts-noto fonts-noto-cjk  \
+     # Font installation, support chinese, japanese, korean, hindi, and thai for now
+     && apt-get install -y fonts-wqy-zenhei fonts-indic fonts-noto fonts-noto-cjk fonts-thai-tlwg-ttf \
      && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/local/app
