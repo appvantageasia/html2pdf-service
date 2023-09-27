@@ -51,8 +51,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: linux/arm64,linux/amd64
+
       - name: Build chrome image
-        run: docker build . --file docker/chrome/Dockerfile --tag $IMAGE_NAME
+        run: docker buildx build . --platform linux/arm64,linux/amd64 --file docker/chrome/Dockerfile --tag $IMAGE_NAME
 
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u $DOCKER_LOGIN --password-stdin
@@ -97,10 +102,10 @@ jobs:
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
         with:
-          platforms: linux/arm64
+          platforms: linux/arm64,linux/amd64
 
       - name: Build chromium image
-        run: docker build . --file docker/chromium/Dockerfile --platform linux/arm64 --tag $IMAGE_CHROMIUM
+        run: docker buildx build . --platform linux/arm64,linux/amd64 --file docker/chromium/Dockerfile --tag $IMAGE_CHROMIUM
 
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u $DOCKER_LOGIN --password-stdin
