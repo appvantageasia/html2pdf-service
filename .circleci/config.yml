@@ -18,6 +18,7 @@ jobs:
       - run:
           name: Install depdencies
           command: yarn install --immutable
+          no_output_timeout: 30m
       - save_cache:
           key: yarn2-cache-node18-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}
           paths:
