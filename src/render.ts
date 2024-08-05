@@ -37,16 +37,13 @@ const render = async (html: string, customOptions?: Partial<RenderOptions> | nul
     let pdf: Buffer;
 
     try {
-        // set view port
-        await page.setViewport(options.viewport);
-
-        if (options.emulateScreenMedia) {
-            await page.emulateMediaType('screen');
-        }
+        // Set viewport and other options concurrently
+        const viewportPromise = page.setViewport(options.viewport || { width: 1280, height: 800 });
+        const emulateMediaPromise = options.emulateScreenMedia ? page.emulateMediaType('screen') : Promise.resolve();
+        await Promise.all([viewportPromise, emulateMediaPromise]);
 
         // set html content
         await page.setContent(html, { waitUntil: options.waitUntil });
-
         // render to pdf
         pdf = await page.pdf(options.pdf);
     } finally {

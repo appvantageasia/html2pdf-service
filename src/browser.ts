@@ -6,8 +6,26 @@ let instancePromise: Promise<puppeteer.Browser> | null = null;
 
 const launchBrowser = async (): Promise<puppeteer.Browser> =>
     puppeteer.launch({
-        headless: 'new',
-        args: ['--disable-gpu', '--no-sandbox', '--disable-setuid-sandbox'],
+        headless: 'shell',
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu',
+            '--no-first-run',
+            '--disable-default-apps',
+            '--disable-hang-monitor',
+            '--disable-prompt-on-repost',
+            '--disable-renderer-backgrounding',
+            '--disable-sync',
+            '--disable-translate',
+            '--metrics-recording-only',
+            '--mute-audio',
+            '--no-crash-upload',
+            '--no-default-browser-check',
+            '--no-pings',
+            '--no-service-autorun',
+        ],
     });
 
 export const getBrowser = () => {
