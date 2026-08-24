@@ -1,6 +1,6 @@
 # html2pdf-service
 
-This service provides a simple API to print out PDF from HTML documents over a Restful API.
+This service provides a simple API to render HTML documents as PDF files or images over a Restful API.
 
 **For my information please refer to the [documentation][doc]**
 
