@@ -48,11 +48,11 @@ app.post('/', async (req, res, next) => {
         const { html = '', options = null } = req.body;
 
         // render the PDF
-        const pdf = await render(html, options);
+        const [buffer, contentType] = await render(html, options);
 
         // reply with express
-        res.set('content-type', 'application/pdf');
-        res.send(pdf);
+        res.set('content-type', contentType ?? 'application/octet-stream');
+        res.send(buffer);
     } catch (error) {
         // continue with the error
         next(error);

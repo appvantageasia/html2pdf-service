@@ -2,22 +2,45 @@ import merge from 'lodash/fp/merge.js';
 import puppeteer from 'puppeteer';
 import { getBrowser } from './browser.js';
 
-export type RenderOptions = {
+enum OutputKind {
+    Pdf = 'Pdf',
+    Image = 'Image',
+}
+
+type VariantRenderOptions<TKind extends OutputKind> = {
+    output: TKind;
     emulateScreenMedia: boolean;
     viewport: puppeteer.Viewport;
     waitUntil: puppeteer.WaitForOptions['waitUntil'];
-    pdf: puppeteer.PDFOptions;
 };
+
+type PdfRenderOptions = VariantRenderOptions<OutputKind.Pdf> & {
+    pdf?: puppeteer.PDFOptions;
+};
+
+type ImageRenderOptions = VariantRenderOptions<OutputKind.Image> & {
+    selector?: string;
+    screenshot?: puppeteer.ScreenshotOptions;
+};
+
+export type RenderOptions = PdfRenderOptions | ImageRenderOptions;
 
 const defaultOptions: RenderOptions = {
     emulateScreenMedia: true,
     viewport: { width: 1600, height: 1200 },
     waitUntil: 'networkidle2',
-    pdf: { format: 'a4', printBackground: true },
+    output: OutputKind.Pdf,
+};
+const defaultPdfOptions: puppeteer.PDFOptions = {
+    format: 'a4',
+    printBackground: true,
+};
+const defaultScreenshotOptions: puppeteer.ScreenshotOptions = {
+    type: 'png',
 };
 
 const render = async (html: string, customOptions?: Partial<RenderOptions> | null) => {
-    const options = merge(defaultOptions, customOptions);
+    const options: RenderOptions = merge(defaultOptions, customOptions);
 
     // start browser
     const browser = await getBrowser();
@@ -34,7 +57,8 @@ const render = async (html: string, customOptions?: Partial<RenderOptions> | nul
         browser.close();
     });
 
-    let pdf: Buffer;
+    let buffer: Buffer;
+    let contentType: string;
 
     try {
         // Set viewport and other options concurrently
@@ -45,13 +69,40 @@ const render = async (html: string, customOptions?: Partial<RenderOptions> | nul
         // set html content
         await page.setContent(html, { waitUntil: options.waitUntil });
         // render to pdf
-        pdf = await page.pdf(options.pdf);
+        switch (options.output) {
+            case OutputKind.Pdf: {
+                const pdfOptions: puppeteer.PDFOptions = merge(defaultPdfOptions, options.pdf);
+
+                contentType = 'application/pdf';
+                buffer = await page.pdf(pdfOptions);
+                break;
+            }
+
+            case OutputKind.Image: {
+                const screenshotOptions: puppeteer.ScreenshotOptions = merge(
+                    defaultScreenshotOptions,
+                    options.screenshot
+                );
+
+                contentType = `image/${screenshotOptions.type || 'png'}`;
+                if (options.selector) {
+                    const element = await page.$(options.selector);
+                    if (element) {
+                        buffer = await element.screenshot(screenshotOptions);
+                    }
+                }
+                if (!buffer) {
+                    buffer = await page.screenshot(screenshotOptions);
+                }
+                break;
+            }
+        }
     } finally {
         // close the page
         await page.close();
     }
 
-    return pdf;
+    return [buffer, contentType] as const;
 };
 
 export default render;
