@@ -41,5 +41,5 @@
         "morgan": "^1.10.0",
         "puppeteer": "^22.15.0"
     },
-    "packageManager": "yarn@3.5.1"
+    "packageManager": "yarn@3.8.7"
 }
